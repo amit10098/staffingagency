@@ -1,0 +1,153 @@
+import { PrismaService } from '../prisma/prisma.service';
+export declare class UsersService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    findOne(id: string): Promise<{
+        profile: {
+            id: string;
+            userId: string;
+            niNumber: string;
+            firstName: string;
+            lastName: string;
+            dob: Date;
+            gender: string;
+            phone: string;
+            address: string;
+            postcode: string;
+            city: string;
+            country: string;
+            emergencyContact: string;
+            emergencyPhone: string;
+            relationship: string;
+            bankAccountName: string;
+            bankSortCode: string;
+            bankAccountNumber: string;
+            rtwStatus: string;
+            visaType: string | null;
+            visaExpiry: Date | null;
+            skills: string[];
+            position: string | null;
+        } | null;
+        company: {
+            id: string;
+            email: string | null;
+            name: string;
+            address: string | null;
+            description: string | null;
+            logoUrl: string | null;
+            industry: string;
+            website: string | null;
+            isActive: boolean;
+            contactPerson: string | null;
+            contactNumber: string | null;
+        } | null;
+    } & {
+        id: string;
+        email: string;
+        password: string;
+        role: import("database").$Enums.UserRole;
+        isVerified: boolean;
+        mfaEnabled: boolean;
+        mfaSecret: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        companyId: string | null;
+    }>;
+    updateProfile(userId: string, data: any): Promise<{
+        id: string;
+        userId: string;
+        niNumber: string;
+        firstName: string;
+        lastName: string;
+        dob: Date;
+        gender: string;
+        phone: string;
+        address: string;
+        postcode: string;
+        city: string;
+        country: string;
+        emergencyContact: string;
+        emergencyPhone: string;
+        relationship: string;
+        bankAccountName: string;
+        bankSortCode: string;
+        bankAccountNumber: string;
+        rtwStatus: string;
+        visaType: string | null;
+        visaExpiry: Date | null;
+        skills: string[];
+        position: string | null;
+    }>;
+    findAll(): Promise<({
+        profile: {
+            id: string;
+            userId: string;
+            niNumber: string;
+            firstName: string;
+            lastName: string;
+            dob: Date;
+            gender: string;
+            phone: string;
+            address: string;
+            postcode: string;
+            city: string;
+            country: string;
+            emergencyContact: string;
+            emergencyPhone: string;
+            relationship: string;
+            bankAccountName: string;
+            bankSortCode: string;
+            bankAccountNumber: string;
+            rtwStatus: string;
+            visaType: string | null;
+            visaExpiry: Date | null;
+            skills: string[];
+            position: string | null;
+        } | null;
+        company: {
+            id: string;
+            email: string | null;
+            name: string;
+            address: string | null;
+            description: string | null;
+            logoUrl: string | null;
+            industry: string;
+            website: string | null;
+            isActive: boolean;
+            contactPerson: string | null;
+            contactNumber: string | null;
+        } | null;
+    } & {
+        id: string;
+        email: string;
+        password: string;
+        role: import("database").$Enums.UserRole;
+        isVerified: boolean;
+        mfaEnabled: boolean;
+        mfaSecret: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        companyId: string | null;
+    })[]>;
+    findWorkers(): Promise<({
+        profile: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            phone: string;
+            city: string;
+            position: string | null;
+        } | null;
+    } & {
+        id: string;
+        email: string;
+        password: string;
+        role: import("database").$Enums.UserRole;
+        isVerified: boolean;
+        mfaEnabled: boolean;
+        mfaSecret: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        companyId: string | null;
+    })[]>;
+}

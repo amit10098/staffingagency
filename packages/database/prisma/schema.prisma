@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  EMPLOYER
+  EMPLOYEE
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String
+  role          UserRole       @default(EMPLOYEE)
+  isVerified    Boolean        @default(false)
+  mfaEnabled    Boolean        @default(false)
+  mfaSecret     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profile       Profile?
+  company       Company?       @relation(fields: [companyId], references: [id])
+  companyId     String?
+  notifications Notification[]
+}
+
+model Profile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id])
+  firstName         String
+  lastName          String
+  dob               DateTime
+  gender            String
+  niNumber          String    @unique
+  phone             String
+  address           String
+  postcode          String
+  city              String
+  country           String
+  emergencyContact  String
+  emergencyPhone    String
+  relationship      String
+  bankAccountName   String
+  bankSortCode      String
+  bankAccountNumber String
+  rtwStatus         String
+  visaType          String?
+  visaExpiry        DateTime?
+  documents         Document[]
+  payslips          Payslip[]
+  skills            String[]
+  sectors           Sector[]
+  shifts            Shift[]
+  position          String?   // Added Position field
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  name          String
+  logoUrl       String?
+  description   String?
+  industry      String
+  website       String?
+  isActive      Boolean  @default(true)
+  address       String?  // Added Address
+  contactPerson String?  // Added Contact Person
+  contactNumber String?  // Added Contact Number
+  email         String?  // Added Email
+  users         User[]
+  jobs          Job[]
+}
+
+model Sector {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  profiles    Profile[]
+  jobs        Job[]
+}
+
+model Job {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  requirements String
+  payRate      Float
+  location     String
+  workersNeeded Int
+  sectorId     String
+  sector       Sector   @relation(fields: [sectorId], references: [id])
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id])
+  shifts       Shift[]
+  status       JobStatus @default(OPEN)
+}
+
+enum JobStatus {
+  OPEN
+  CANCELLED
+  COMPLETED
+}
+
+model Shift {
+  id          String       @id @default(cuid())
+  jobId       String
+  job         Job          @relation(fields: [jobId], references: [id])
+  startTime   DateTime
+  endTime     DateTime
+  workerId    String?
+  worker      Profile?     @relation(fields: [workerId], references: [id])
+  attendance  Attendance?
+  status      ShiftStatus  @default(UNASSIGNED)
+  breakTime   Int?         // Added Break Time in minutes
+  notes       String?      // Added Shift Notes
+}
+
+enum ShiftStatus {
+  UNASSIGNED
+  ASSIGNED
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+
+model Attendance {
+  id              String   @id @default(cuid())
+  shiftId         String   @unique
+  shift           Shift    @relation(fields: [shiftId], references: [id])
+  clockInTime     DateTime?
+  clockInGps      String?
+  clockOutTime    DateTime?
+  clockOutGps     String?
+  deviceInfo      String?
+  latenessDetected Boolean @default(false)
+  approvalStatus  String   @default("PENDING") // PENDING | APPROVED | FLAGGED | MODIFIED
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  type        String   // Passport, BRP, etc.
+  url         String
+  status      DocStatus @default(PENDING)
+  expiryDate  DateTime?
+  verifiedAt  DateTime?
+}
+
+enum DocStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  message     String
+  type        String   @default("info")
+  metadata    Json?
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Payslip {
+  id          String   @id @default(cuid())
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  period      String
+  month       Int
+  year        Int
+  grossPay    Float
+  netPay      Float
+  hoursWorked Float    @default(0)
+  fileUrl     String?
+  status      String   @default("PAID")
+  uploadedBy  String?
+  createdAt   DateTime @default(now())
+}
